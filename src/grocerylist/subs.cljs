@@ -85,7 +85,7 @@
   :<- [::sort-method]
   :<- [::sort-reversed?]
   (fn [[location-list list sort-method sort-reversed?]]
-    (into [] ((get u/sorting-method-map sort-method) location-list (mapv  #(assoc %1 :id %2) list (range)) sort-reversed?))))
+    (into [] ((get u/sorting-method-map sort-method) location-list (mapv #(assoc %1 :id %2) list (range)) sort-reversed?))))
 
 (re-frame/reg-sub
   ::sorted-list-item

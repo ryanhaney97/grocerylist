@@ -5,18 +5,18 @@
     [grocerylist.events :as events]))
 
 (defn draw-item [_ itemnum]
-  (let [item @(re-frame/subscribe [::subs/listitem itemnum])]
+  (let [item @(re-frame/subscribe [::subs/sorted-list-item itemnum])]
     [:tr
      [:td
       [:button {:type "button"
-                :on-click #(re-frame/dispatch [::events/delete-item itemnum])}
+                :on-click #(re-frame/dispatch [::events/delete-item (:id item)])}
        "X"]]
      [:td (:name item "")]
      [:td (:location item "")]
      [:td
       [:input {:type "checkbox"
                :checked (:checked? item)
-               :on-change #(re-frame/dispatch [::events/check-item itemnum])}]]]))
+               :on-change #(re-frame/dispatch [::events/check-item (:id item)])}]]]))
 
 (defn draw-column-header [category category-name]
   (let [sort-method @(re-frame/subscribe [::subs/sort-method])

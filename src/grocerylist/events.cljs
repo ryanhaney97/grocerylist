@@ -9,46 +9,32 @@
   (fn [_ _]
     db/default-db))
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
   ::add-item
-  (fn [{db :db} [_ itemname itemlocation]]
-    {:db (update db :list conj {:name itemname
-                                :location itemlocation
-                                :checked? false})
-     :fx [[:dispatch [::sort-list]]]}))
+  (fn [db [_ itemname itemlocation]]
+    (update db :list conj {:name itemname
+                           :location itemlocation
+                           :checked? false})))
 
 (re-frame/reg-event-db
   ::delete-item
   (fn [db [_ itemnum]]
     (update db :list u/removenth itemnum)))
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
   ::check-item
-  (fn [{db :db} [_ itemnum]]
-    (let [resultfx {:db
-                    (update-in db [:list itemnum :checked?] not)}]
-      (if (= (:sort-method db) :checked?)
-        (assoc resultfx :fx [[:dispatch [::sort-list]]])
-        resultfx))))
+  (fn [db [_ itemnum]]
+    (update-in db [:list itemnum :checked?] not)))
 
 (re-frame/reg-event-db
-  ::sort-list
-  (fn [db]
-    (let [sort-method (:sort-method db)
-          reversed? (:sort-reversed? db)]
-      (update db :list #(into [] ((u/sorting-method-map sort-method) (:locations db) %1 reversed?))))))
-
-(re-frame/reg-event-fx
   ::toggle-sort-method
-  (fn [{db :db} [_ sort-method]]
-    {:db
-     (if (contains? u/sorting-method-map sort-method)
-       (if (= sort-method (:sort-method db))
-         (update db :sort-reversed? not)
-         (assoc db :sort-method sort-method
-                   :sort-reversed? false))
-       db)
-     :fx [[:dispatch [::sort-list]]]}))
+  (fn [db [_ sort-method]]
+    (if (contains? u/sorting-method-map sort-method)
+      (if (= sort-method (:sort-method db))
+        (update db :sort-reversed? not)
+        (assoc db :sort-method sort-method
+                  :sort-reversed? false))
+      db)))
 
 (re-frame/reg-event-db
   ::itemform.update-name
@@ -96,13 +82,10 @@
   (fn [db [_ itemnum]]
     (assoc db :location.dragged itemnum)))
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
   ::locations.drag-end
-  (fn [{db :db} _]
-    (let [resultfx {:db (assoc db :location.dragged nil)}]
-      (if (= (:sort-method db) :name)
-        resultfx
-        (assoc resultfx :fx [[:dispatch [::sort-list]]])))))
+  (fn [db _]
+    (assoc db :location.dragged nil)))
 
 (re-frame/reg-event-db
   ::locations.drag-over
