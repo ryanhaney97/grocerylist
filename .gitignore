@@ -15,6 +15,3 @@
 /.shadow-cljs/
 #.idea
 .idea
-
-#currently unused
-karma.conf.js
