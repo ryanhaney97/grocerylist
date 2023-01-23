@@ -5,7 +5,8 @@
    :sort-method :checked?
    :sort-reversed? false
    :route :list
-   :list []
+   :items {}
+   :next-id 0
    :itemform {:name ""}
    :locations ["Produce"
                "Aisle 1"

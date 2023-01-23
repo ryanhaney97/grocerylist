@@ -2,32 +2,46 @@
   (:require
     [re-frame.core :as re-frame]
     [grocerylist.subs :as subs]
-    [grocerylist.events :as events]))
+    [grocerylist.events :as events]
+    [grocerylist.util :as u]))
 
-(defn draw-item [_ itemnum]
-  (let [item @(re-frame/subscribe [::subs/sorted-list-item itemnum])]
+(defn draw-item-delete-button [id]
+  (let [on-click-delete (fn [id] (re-frame/dispatch [::events/delete-item id]))
+        on-click-delete-factory (u/callback-factory-factory on-click-delete)]
+    (fn [id]
+      [:button {:type "button"
+                :on-click (on-click-delete-factory id)}
+       "X"])))
+
+(defn draw-item-checkbox [checked? id]
+  (let [on-checked (fn [id] (re-frame/dispatch [::events/check-item id]))
+        on-checked-factory (u/callback-factory-factory on-checked)]
+    (fn [checked? id]
+      [:input {:type "checkbox"
+               :checked checked?
+               :on-change (on-checked-factory id)}])))
+(defn draw-item [_ id]
+  (let [item @(re-frame/subscribe [::subs/item-by-id id])]
     [:tr
      [:td
-      [:button {:type "button"
-                :on-click #(re-frame/dispatch [::events/delete-item (:id item)])}
-       "X"]]
+      [draw-item-delete-button id]]
      [:td (:name item "")]
      [:td (:location item "")]
      [:td
-      [:input {:type "checkbox"
-               :checked (:checked? item)
-               :on-change #(re-frame/dispatch [::events/check-item (:id item)])}]]]))
+      [draw-item-checkbox (:checked? item) id]]]))
 
 (defn draw-column-header [category category-name]
-  (let [sort-method @(re-frame/subscribe [::subs/sort-method])
-        sort-reversed? @(re-frame/subscribe [::subs/sort-reversed?])]
-    [:th {:scope "col"
-          :on-click #(re-frame/dispatch [::events/toggle-sort-method category])}
-     (if (= category sort-method)
-       (str category-name (if sort-reversed?
-                            " \u25B2"
-                            " \u25BC"))
-       category-name)]))
+  (let [sort-method (re-frame/subscribe [::subs/sort-method])
+        sort-reversed? (re-frame/subscribe [::subs/sort-reversed?])
+        on-click #(re-frame/dispatch [::events/toggle-sort-method category])]
+    (fn []
+      [:th {:scope "col"
+            :on-click on-click}
+       (if (= category @sort-method)
+         (str category-name (if @sort-reversed?
+                              " \u25B2"
+                              " \u25BC"))
+         category-name)])))
 
 (defn draw-table-header []
   [:thead
@@ -41,8 +55,8 @@
   [:table
    [draw-table-header]
    [:tbody
-    (let [nlist @(re-frame/subscribe [::subs/nlist])]
-      (map (fn [itemnum] [draw-item {:key itemnum} itemnum]) (range nlist)))]])
+    (let [id-list @(re-frame/subscribe [::subs/sorted-ids])]
+      (map (fn [id] [draw-item {:key id} id]) id-list))]])
 
 (defn draw-buttons []
   [:div
@@ -109,22 +123,26 @@
              :on-click #(re-frame/dispatch [::events/itemform.add-item])}
     "Add"]])
 
-(defn draw-location-item [_ itemnum]
-  (let [location @(re-frame/subscribe [::subs/location-listitem itemnum])
-        hidden? @(re-frame/subscribe [::subs/location.dragged? itemnum])]
-    ;(js/console.log (str "Draw Location " itemnum))
-    [:tr {:draggable "true"
-          :on-drag-start #(re-frame/dispatch [::events/locations.drag-start itemnum])
-          :on-drag-end #(re-frame/dispatch [::events/locations.drag-end])
-          :on-drag-enter #(re-frame/dispatch [::events/locations.drag-over itemnum])}
-     [:td {:class (if hidden? "hidden" "")}
-      location]]))
+(defn draw-location-item [_ location itemnum]
+  (let [on-drag-start (fn [itemnum] (re-frame/dispatch [::events/locations.drag-start itemnum]))
+        drag-start-factory (u/callback-factory-factory on-drag-start)
+        on-drag-end #(re-frame/dispatch [::events/locations.drag-end])
+        on-drag-enter (fn [itemnum] (re-frame/dispatch [::events/locations.drag-over itemnum]))
+        drag-enter-factory (u/callback-factory-factory on-drag-enter)]
+    (fn [_ location itemnum]
+      (let [hidden? @(re-frame/subscribe [::subs/location.dragged? itemnum])]
+        [:tr {:draggable "true"
+              :on-drag-start (drag-start-factory itemnum)
+              :on-drag-end on-drag-end
+              :on-drag-enter (drag-enter-factory itemnum)}
+         [:td {:class (if hidden? "hidden" "")}
+          location]]))))
 
 (defn draw-location-list []
   [:table
    [:tbody
-    (let [nlist (re-frame/subscribe [::subs/nlocations])]
-      (map (fn [itemnum] [draw-location-item {:key itemnum} itemnum]) (range @nlist)))]])
+    (let [list (re-frame/subscribe [::subs/location-list])]
+      (map (fn [location itemnum] [draw-location-item {:key location} location itemnum]) @list (range)))]])
 
 (defn draw-add-location-input []
   (let [currentname @(re-frame/subscribe [::subs/locationform.name])]

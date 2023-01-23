@@ -1,22 +1,25 @@
 (ns grocerylist.subs
   (:require
-   [re-frame.core :as re-frame]
-   [grocerylist.util :as u]))
+    [re-frame.core :as re-frame]
+    [grocerylist.util :as u]))
 
 (re-frame/reg-sub
   ::route
-  (fn [db]
-    (:route db)))
+  :-> :route)
 
 (re-frame/reg-sub
- ::listname
- (fn [db]
-   (:listname db)))
+  ::listname
+  (fn [db]
+    (:listname db)))
+
+(re-frame/reg-sub
+  ::items
+  :-> :items)
 
 (re-frame/reg-sub
   ::list
-  (fn [db]
-    (:list db)))
+  :<- [::items]
+  :-> vals)
 
 (re-frame/reg-sub
   ::location-list
@@ -33,11 +36,11 @@
   (fn [db]
     (get-in db [:itemform :location] "")))
 
-(re-frame/reg-sub
-  ::listitem
-  :<- [::list]
-  (fn [list [_ itemnum]]
-    (get list itemnum)))
+;(re-frame/reg-sub
+;  ::listitem
+;  :<- [::list]
+;  (fn [list [_ itemnum]]
+;    (get list itemnum)))
 
 (re-frame/reg-sub
   ::location.dragged
@@ -53,17 +56,17 @@
   ::location-listitem
   :<- [::location-list]
   (fn [list [_ itemnum]]
-      (get list itemnum)))
+    (get list itemnum)))
 
 (re-frame/reg-sub
   ::nlocations
   :<- [::location-list]
   :-> count)
 
-(re-frame/reg-sub
-  ::nlist
-  :<- [::list]
-  :-> count)
+;(re-frame/reg-sub
+;  ::nlist
+;  :<- [::list]
+;  :-> count)
 
 (re-frame/reg-sub
   ::locationform.name
@@ -85,10 +88,16 @@
   :<- [::sort-method]
   :<- [::sort-reversed?]
   (fn [[location-list list sort-method sort-reversed?]]
-    (into [] ((get u/sorting-method-map sort-method) location-list (mapv #(assoc %1 :id %2) list (range)) sort-reversed?))))
+    ((get u/sorting-method-map sort-method) location-list list sort-reversed?)))
 
 (re-frame/reg-sub
-  ::sorted-list-item
+  ::sorted-ids
   :<- [::sorted-list]
-  (fn [sorted-list [_ itemnum]]
-    (get sorted-list itemnum)))
+  (fn [sorted-list]
+    (map :id sorted-list)))
+
+(re-frame/reg-sub
+  ::item-by-id
+  :<- [::items]
+  (fn [items [_ id]]
+    (get items id)))

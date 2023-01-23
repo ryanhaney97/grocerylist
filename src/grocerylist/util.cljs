@@ -40,3 +40,23 @@
            (apply sort-by-name args))
    :location sort-by-location
    :checked? sort-by-checked})
+
+(defn callback-factory-factory
+  "returns a function which will always return the `same-callback` every time
+   it is called.
+   `same-callback` is what actually calls your `callback` and, when it does,
+   it supplies any necessary args, including those supplied at wrapper creation
+   time and any supplied by the browser (a DOM event object?) at call time.
+   NOTE: Copied from the re-frame docs: https://day8.github.io/re-frame/on-stable-dom-handlers/#the-technique"
+  [the-real-callback]
+  (let [*args1        (atom nil)
+        same-callback (fn [& args2]
+                        (apply the-real-callback (concat @*args1 args2)))]
+    (fn callback-factory
+      [& args1]
+      (reset! *args1 args1)
+      same-callback)))
+
+(defn id->itemnum [list id]
+  (first
+    (filter (comp #{id} :id (partial nth list)) (range (count list)))))

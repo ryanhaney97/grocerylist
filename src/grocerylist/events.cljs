@@ -12,19 +12,23 @@
 (re-frame/reg-event-db
   ::add-item
   (fn [db [_ itemname itemlocation]]
-    (update db :list conj {:name itemname
-                           :location itemlocation
-                           :checked? false})))
+    (let [id (:next-id db)]
+      (-> db
+          (assoc-in [:items id] {:name itemname
+                                 :location itemlocation
+                                 :checked? false
+                                 :id id})
+          (update :next-id inc)))))
 
 (re-frame/reg-event-db
   ::delete-item
-  (fn [db [_ itemnum]]
-    (update db :list u/removenth itemnum)))
+  (fn [db [_ id]]
+    (update db :items dissoc id)))
 
 (re-frame/reg-event-db
   ::check-item
-  (fn [db [_ itemnum]]
-    (update-in db [:list itemnum :checked?] not)))
+  (fn [db [_ id]]
+    (update-in db [:items id :checked?] not)))
 
 (re-frame/reg-event-db
   ::toggle-sort-method
