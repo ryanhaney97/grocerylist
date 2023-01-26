@@ -1,15 +1,24 @@
 (ns grocerylist.events
   (:require
     [re-frame.core :as re-frame]
+    [akiroz.re-frame.storage :as storage]
     [grocerylist.db :as db]
     [grocerylist.util :as u]))
 
-(re-frame/reg-event-db
-  ::initialize-db
-  (fn [_ _]
-    db/default-db))
+(def persist-keys [:items :locations :next-id])
+(defn reg-event-persistent-db [event-id handler]
+  (re-frame/reg-event-fx
+    event-id
+    [(storage/persist-db-keys :grocerylist persist-keys)]
+    (fn [{:keys [db]} event-vec]
+      {:db (handler db event-vec)})))
 
-(re-frame/reg-event-db
+(reg-event-persistent-db
+  ::initialize-db
+  (fn [db _]
+    (u/deep-merge db/default-db db)))
+
+(reg-event-persistent-db
   ::add-item
   (fn [db [_ itemname itemlocation]]
     (let [id (:next-id db)]
@@ -20,12 +29,12 @@
                                  :id id})
           (update :next-id inc)))))
 
-(re-frame/reg-event-db
+(reg-event-persistent-db
   ::delete-item
   (fn [db [_ id]]
     (update db :items dissoc id)))
 
-(re-frame/reg-event-db
+(reg-event-persistent-db
   ::check-item
   (fn [db [_ id]]
     (update-in db [:items id :checked?] not)))
@@ -55,7 +64,7 @@
   (fn [db [_ name]]
     (assoc-in db [:locationform :name] name)))
 
-(re-frame/reg-event-db
+(reg-event-persistent-db
   ::locationform.submit
   (fn [db]
     (let [location (get-in db [:locationform :name])]
@@ -91,7 +100,7 @@
   (fn [db _]
     (assoc db :location.dragged nil)))
 
-(re-frame/reg-event-db
+(reg-event-persistent-db
   ::locations.drag-over
   (fn [db [_ itemnum]]
     (->
