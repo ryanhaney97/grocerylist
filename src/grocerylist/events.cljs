@@ -13,6 +13,40 @@
     (fn [{:keys [db]} event-vec]
       {:db (handler db event-vec)})))
 
+(re-frame/reg-fx
+  :confirm-dialog
+  (fn [{:keys [message on-confirm on-deny]
+        :or {message ""}}]
+    (if (js/confirm message)
+      (when on-confirm
+        (on-confirm))
+      (when on-deny
+        (on-deny)))))
+
+(re-frame/reg-event-fx
+  ::confirm-delete-location
+  (fn [{db :db} [_ itemnum]]
+    (let [location (nth (:locations db) itemnum)
+          location-counts (frequencies (map :location (vals (:items db))))
+          num-references (get location-counts location 0)]
+      (if (= num-references 0)
+        {:fx [[:dispatch [::delete-location itemnum]]]}
+        {:fx [[:confirm-dialog
+               {:message (str "There are currently " num-references " items located in " location " that will be deleted as well. Do you still want to delete " location " ?")
+                :on-confirm #(re-frame/dispatch [::delete-location itemnum])}]]}))))
+
+(defn remove-items-with-location [items location]
+  (into {}
+        (remove (comp #{location} :location val) items)))
+(reg-event-persistent-db
+  ::delete-location
+  (fn [db [_ itemnum]]
+    (let [location (nth (:locations db) itemnum)]
+      (js/console.log itemnum)
+      (-> db
+          (update :locations u/removenth itemnum)
+          (update :items remove-items-with-location location)))))
+
 (reg-event-persistent-db
   ::initialize-db
   (fn [db _]

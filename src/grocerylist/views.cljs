@@ -123,6 +123,14 @@
              :on-click #(re-frame/dispatch [::events/itemform.add-item])}
     "Add"]])
 
+(defn draw-location-delete-button [id]
+  (let [on-click-delete (fn [id] (re-frame/dispatch [::events/confirm-delete-location id]))
+        on-click-delete-factory (u/callback-factory-factory on-click-delete)]
+    (fn [id]
+      [:button {:type "button"
+                :on-click (on-click-delete-factory id)}
+       "X"])))
+
 (defn draw-location-item [_ location itemnum]
   (let [on-drag-start (fn [itemnum] (re-frame/dispatch [::events/locations.drag-start itemnum]))
         drag-start-factory (u/callback-factory-factory on-drag-start)
@@ -135,6 +143,8 @@
               :on-drag-start (drag-start-factory itemnum)
               :on-drag-end on-drag-end
               :on-drag-enter (drag-enter-factory itemnum)}
+         [:td
+          [draw-location-delete-button itemnum]]
          [:td {:class (if hidden? "hidden" "")}
           location]]))))
 
@@ -142,7 +152,7 @@
   [:table
    [:tbody
     (let [list (re-frame/subscribe [::subs/location-list])]
-      (map (fn [location itemnum] [draw-location-item {:key location} location itemnum]) @list (range)))]])
+      (map-indexed (fn [itemnum location] [draw-location-item {:key location} location itemnum]) @list))]])
 
 (defn draw-add-location-input []
   (let [currentname @(re-frame/subscribe [::subs/locationform.name])]
