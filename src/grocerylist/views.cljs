@@ -20,13 +20,43 @@
       [:input {:type "checkbox"
                :checked checked?
                :on-change (on-checked-factory id)}])))
+
+(defn draw-item-name [name id]
+  (let [on-name-change (fn [id event] (re-frame/dispatch-sync [::events/update-item-name id (.-value (.-target event))]))
+        name-change-factory (u/callback-factory-factory on-name-change)
+        on-enter (fn [event]
+                   (if (= (.-key event) "Enter")
+                     (.blur (.-target event))))]
+    (fn [name id]
+      [:input {:type "text"
+               :value name
+               :on-change (name-change-factory id)
+               :on-key-down on-enter
+               :class "editname"
+               :size (count name)}])))
+
+(defn draw-item-location [_ location id]
+  (let [locations (re-frame/subscribe [::subs/location-list])
+        on-location-change (fn [id event]
+                             (re-frame/dispatch [::events/update-item-location id (.-value (.-target event))]))
+        location-change-factory (u/callback-factory-factory on-location-change)]
+    (fn [_ location id]
+      [:select {:value location
+                :on-change (location-change-factory id)}
+       (map
+         (fn [location]
+           [:option {:value location
+                     :key location}
+            location]) @locations)])))
 (defn draw-item [_ id]
   (let [item @(re-frame/subscribe [::subs/item-by-id id])]
     [:tr
      [:td
       [draw-item-delete-button id]]
-     [:td (:name item "")]
-     [:td (:location item "")]
+     [:td
+      [draw-item-name (:name item "") id]]
+     [:td
+      [draw-item-location {:key (:location item)} (:location item) id]]
      [:td
       [draw-item-checkbox (:checked? item) id]]]))
 
@@ -52,7 +82,7 @@
     [draw-column-header :checked? "Checked"]]])
 
 (defn draw-item-list []
-  [:table
+  [:table {:class "itemtable"}
    [draw-table-header]
    [:tbody
     (let [id-list @(re-frame/subscribe [::subs/sorted-ids])]
@@ -139,13 +169,14 @@
         drag-enter-factory (u/callback-factory-factory on-drag-enter)]
     (fn [_ location itemnum]
       (let [hidden? @(re-frame/subscribe [::subs/location.dragged? itemnum])]
-        [:tr {:draggable "true"
-              :on-drag-start (drag-start-factory itemnum)
-              :on-drag-end on-drag-end
-              :on-drag-enter (drag-enter-factory itemnum)}
+        [:tr
          [:td
           [draw-location-delete-button itemnum]]
-         [:td {:class (if hidden? "hidden" "")}
+         [:td {:draggable "true"
+               :on-drag-start (drag-start-factory itemnum)
+               :on-drag-end on-drag-end
+               :on-drag-enter (drag-enter-factory itemnum)
+               :class (if hidden? "hidden" "")}
           location]]))))
 
 (defn draw-location-list []
