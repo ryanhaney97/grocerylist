@@ -233,8 +233,33 @@
 (defn lists-panel []
   [:div
    [:h1 "Select a list"]
-   [lists-list]])
+   [lists-list]
+   [:button {:type "button"
+             :on-click #(re-frame/dispatch [::events/route-to :newlist])}
+    "New"]])
 
+(defn draw-list-name-input []
+  (let [currentname @(re-frame/subscribe [::subs/listform.name])]
+    [:div
+     [:label {:for "name"} "List Name: "]
+     [:input {:name "name"
+              :type "text"
+              :value currentname
+              :on-change (fn [event]
+                           (re-frame/dispatch-sync [::events/listform.update-name (.-value (.-target event))]))
+              :on-key-down (fn [event]
+                             (if (= (.-key event) "Enter")
+                               (re-frame/dispatch [::events/listform.add-list])))}]]))
+
+(defn draw-list-form []
+  [:div
+   [:h1 "Create a New List"]
+   [draw-list-name-input]
+   [:button {:type "button"
+             :on-click #(re-frame/dispatch [::events/listform.add-list])}
+    "Add"]])
+
+(defmethod routes/panels :newlist [] [draw-list-form])
 (defmethod routes/panels :lists [] [lists-panel])
 (defmethod routes/panels :list [] [main-list-panel])
 (defmethod routes/panels :additem [] [add-item-panel])

@@ -207,3 +207,18 @@
                                      :items.next-id 0
                                      :locations []})
           (update :lists.next-id inc)))))
+
+(re-frame/reg-event-fx
+  ::listform.add-list
+  (fn [{db :db}]
+    (let [listname (get-in db [:listform :name] "")
+          new-list-id (:lists.next-id db)]
+      (if (= listname "")
+        {}
+        {:fx [[:dispatch [::new-list listname]]
+              [:dispatch [::route-to :list new-list-id]]]}))))
+
+(re-frame/reg-event-db
+  ::listform.update-name
+  (fn [db [_ new-name]]
+    (assoc-in db [:listform :name] new-name)))

@@ -125,3 +125,8 @@
     (reduce-kv (fn [coll id list]
                  (conj coll {:id id
                              :listname (:listname list)})) [] lists)))
+
+(re-frame/reg-sub
+  ::listform.name
+  (fn [db]
+    (get-in db [:listform :name] "")))

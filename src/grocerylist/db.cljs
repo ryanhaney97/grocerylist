@@ -12,9 +12,10 @@
 
    :sort-method :checked?
    :sort-reversed? false
-   :route :list
+   :route :lists
    :current-list-id 0
    :lists.next-id 1
    :itemform {:name ""}
    :locationform {:name ""}
+   :listform {:name ""}
    :location.dragged nil})

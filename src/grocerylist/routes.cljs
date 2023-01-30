@@ -11,6 +11,7 @@
 (def routes
   (atom
     ["/" {"" :lists
+          "new" :newlist
           [:id ""] :list
           [:id "/add"] :additem
           [:id "/locations"] :locations}]))
