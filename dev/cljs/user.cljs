@@ -18,7 +18,9 @@
 (defn add-rand-item!
   ([minlen maxlen]
    (let [n (+ minlen (rand-int (- maxlen minlen)))
-         location (get-in @re-frame.db/app-db [:locations (rand-int (count (:locations @re-frame.db/app-db)))])]
+         db @re-frame.db/app-db
+         locations (get-in db [:lists (:current-list-id db) :locations])
+         location (get locations (rand-int (count locations)))]
      (re-frame.core/dispatch [:grocerylist.events/add-item (rand-word n) location]))))
 
 (defn add-rand-items!

@@ -8,12 +8,28 @@
   :-> :route)
 
 (re-frame/reg-sub
+  ::current-list-id
+  :-> :current-list-id)
+
+(re-frame/reg-sub
+  ::lists
+  :-> :lists)
+
+(re-frame/reg-sub
+  ::current-list
+  :<- [::lists]
+  :<- [::current-list-id]
+  (fn [[lists current-list-id]]
+    (get lists current-list-id)))
+
+(re-frame/reg-sub
   ::listname
-  (fn [db]
-    (:listname db)))
+  :<- [::current-list]
+  :-> :listname)
 
 (re-frame/reg-sub
   ::items
+  :<- [::current-list]
   :-> :items)
 
 (re-frame/reg-sub
@@ -23,8 +39,8 @@
 
 (re-frame/reg-sub
   ::location-list
-  (fn [db]
-    (:locations db)))
+  :<- [::current-list]
+  :-> :locations)
 
 (re-frame/reg-sub
   ::itemform.name
@@ -101,3 +117,11 @@
   :<- [::items]
   (fn [items [_ id]]
     (get items id)))
+
+(re-frame/reg-sub
+  ::lists-list
+  :<- [::lists]
+  (fn [lists]
+    (reduce-kv (fn [coll id list]
+                 (conj coll {:id id
+                             :listname (:listname list)})) [] lists)))

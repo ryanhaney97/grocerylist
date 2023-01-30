@@ -5,13 +5,33 @@
     [grocerylist.db :as db]
     [grocerylist.util :as u]))
 
-(def persist-keys [:items :locations :next-id])
-(defn reg-event-persistent-db [event-id handler]
-  (re-frame/reg-event-fx
-    event-id
-    [(storage/persist-db-keys :grocerylist persist-keys)]
-    (fn [{:keys [db]} event-vec]
-      {:db (handler db event-vec)})))
+(def persist-keys [:lists :lists.next-id])
+(defn reg-event-persistent-db
+  ([event-id interceptors handler]
+   (re-frame/reg-event-fx
+     event-id
+     (into [(storage/persist-db-keys :grocerylist persist-keys)] interceptors)
+     (fn [{:keys [db]} event-vec]
+       {:db (handler db event-vec)})))
+  ([event-id handler]
+   (reg-event-persistent-db event-id [] handler)))
+
+(def select-list
+  (re-frame/->interceptor
+    :id :select-list
+    :before (fn [context]
+              (let [db (get-in context [:coeffects :db])
+                    current-list (get-in db [:lists (:current-list-id db)])]
+                (update-in context [:coeffects :db] merge current-list)))
+    :after (fn [context]
+             (if-let [db (get-in context [:effects :db])]
+               (let [current-list-id (get-in context [:coeffects :db :current-list-id])
+                     list-keys (keys (get-in db [:lists current-list-id]))
+                     updated-list (select-keys db list-keys)]
+                 (-> context
+                     (assoc-in [:effects :db :lists current-list-id] updated-list)
+                     (update-in [:effects :db] (fn [db] (apply dissoc db list-keys)))))
+               context))))
 
 (re-frame/reg-fx
   :confirm-dialog
@@ -25,6 +45,7 @@
 
 (re-frame/reg-event-fx
   ::confirm-delete-location
+  [select-list]
   (fn [{db :db} [_ itemnum]]
     (let [location (nth (:locations db) itemnum)
           location-counts (frequencies (map :location (vals (:items db))))
@@ -40,9 +61,9 @@
         (remove (comp #{location} :location val) items)))
 (reg-event-persistent-db
   ::delete-location
+  [select-list]
   (fn [db [_ itemnum]]
     (let [location (nth (:locations db) itemnum)]
-      (js/console.log itemnum)
       (-> db
           (update :locations u/removenth itemnum)
           (update :items remove-items-with-location location)))))
@@ -54,32 +75,37 @@
 
 (reg-event-persistent-db
   ::add-item
+  [select-list]
   (fn [db [_ itemname itemlocation]]
-    (let [id (:next-id db)]
+    (let [id (:items.next-id db)]
       (-> db
           (assoc-in [:items id] {:name itemname
                                  :location itemlocation
                                  :checked? false
                                  :id id})
-          (update :next-id inc)))))
+          (update :items.next-id inc)))))
 
 (reg-event-persistent-db
   ::delete-item
+  [select-list]
   (fn [db [_ id]]
     (update db :items dissoc id)))
 
 (reg-event-persistent-db
   ::check-item
+  [select-list]
   (fn [db [_ id]]
     (update-in db [:items id :checked?] not)))
 
 (reg-event-persistent-db
   ::update-item-name
+  [select-list]
   (fn [db [_ id new-name]]
     (assoc-in db [:items id :name] new-name)))
 
 (reg-event-persistent-db
   ::update-item-location
+  [select-list]
   (fn [db [_ id new-location]]
     (if (> (.indexOf (:locations db) new-location) -1)
       (assoc-in db [:items id :location] new-location)
@@ -112,6 +138,7 @@
 
 (reg-event-persistent-db
   ::locationform.submit
+  [select-list]
   (fn [db]
     (let [location (get-in db [:locationform :name])]
       (if (or (= location "") (> (.indexOf (:locations db) location) -1))
@@ -122,6 +149,7 @@
 
 (re-frame/reg-event-fx
   ::itemform.add-item
+  [select-list]
   (fn [{db :db}]
     (let [name (get-in db [:itemform :name] "")
           location (get-in db [:itemform :location] (first (:locations db)))]
@@ -132,6 +160,7 @@
 
 (re-frame/reg-event-fx
   ::itemform.reset
+  [select-list]
   (fn [{db :db} _]
     {:fx [[:dispatch [::itemform.update-name ""]]
           [:dispatch [::itemform.update-location (first (:locations db))]]]}))
@@ -151,15 +180,30 @@
   (fn [db [_ itemnum]]
     (->
       db
-      (update :locations u/swap (:location.dragged db) itemnum)
+      (update-in [:lists (:current-list-id db) :locations] u/swap (:location.dragged db) itemnum)
       (assoc :location.dragged itemnum))))
 
 (re-frame/reg-event-db
   ::set-route
-  (fn [db [_ path]]
-    (assoc db :route path)))
+  (fn [db [_ route]]
+    (assoc db
+      :route (:handler route)
+      :current-list-id (get-in route [:route-params :id] (:current-list-id db)))))
 
 (re-frame/reg-event-fx
   ::route-to
-  (fn [_ [_ handler]]
-    {:navigate handler}))
+  (fn [{db :db} [_ handler id]]
+    {:navigate [handler :id (if id
+                              id
+                              (:current-list-id db))]}))
+
+(reg-event-persistent-db
+  ::new-list
+  (fn [db [_ listname]]
+    (let [new-id (:lists.next-id db)]
+      (-> db
+          (assoc-in [:lists new-id] {:listname listname
+                                     :items {}
+                                     :items.next-id 0
+                                     :locations []})
+          (update :lists.next-id inc)))))

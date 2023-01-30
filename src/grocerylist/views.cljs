@@ -95,6 +95,9 @@
              :on-click #(re-frame/dispatch [::events/route-to :additem])}
     "Add"]
    [:button {:type "button"
+             :on-click #(re-frame/dispatch [::events/route-to :lists])}
+    "Lists"]
+   [:button {:type "button"
              :on-click #(re-frame/dispatch [::events/route-to :locations])}
     "Locations"]])
 
@@ -213,6 +216,26 @@
    [draw-location-form]
    [draw-location-list]])
 
+(defn draw-list-link [_ list]
+  (let [on-click (fn [id] (re-frame/dispatch [::events/route-to :list id]))
+        on-click-factory (u/callback-factory-factory on-click)]
+    (fn [_ list]
+      [:li
+       [:button {:type "button"
+                 :on-click (on-click-factory (:id list))}
+        (:listname list)]])))
+
+(defn lists-list []
+  (let [lists @(re-frame/subscribe [::subs/lists-list])]
+    [:ul
+     (map (fn [list] [draw-list-link {:key (:id list)} list]) lists)]))
+
+(defn lists-panel []
+  [:div
+   [:h1 "Select a list"]
+   [lists-list]])
+
+(defmethod routes/panels :lists [] [lists-panel])
 (defmethod routes/panels :list [] [main-list-panel])
 (defmethod routes/panels :additem [] [add-item-panel])
 (defmethod routes/panels :locations [] [location-panel])

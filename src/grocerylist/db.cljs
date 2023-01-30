@@ -1,17 +1,20 @@
 (ns grocerylist.db)
 
 (def default-db
-  {:listname "Grocery List"
+  {:lists {0 {:listname "Grocery List"
+              :items {}
+              :items.next-id 0
+              :locations ["Produce"
+                          "Aisle 1"
+                          "Aisle 2"
+                          "Aisle 3"
+                          "Aisle 4"]}}
+
    :sort-method :checked?
    :sort-reversed? false
    :route :list
-   :items {}
-   :next-id 0
+   :current-list-id 0
+   :lists.next-id 1
    :itemform {:name ""}
-   :locations ["Produce"
-               "Aisle 1"
-               "Aisle 2"
-               "Aisle 3"
-               "Aisle 4"]
    :locationform {:name ""}
    :location.dragged nil})
