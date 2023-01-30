@@ -5,7 +5,7 @@
    [grocerylist.events :as events]
    [grocerylist.views :as views]
    [grocerylist.config :as config]
-   ))
+   [grocerylist.routes :as routing]))
 
 
 (defn dev-setup []
@@ -19,6 +19,7 @@
     (rdom/render [views/main-router] root-el)))
 
 (defn init []
+  (routing/start!)
   (re-frame/dispatch-sync [::events/initialize-db])
   (dev-setup)
   (mount-root))

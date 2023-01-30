@@ -155,6 +155,11 @@
       (assoc :location.dragged itemnum))))
 
 (re-frame/reg-event-db
-  ::route-to
+  ::set-route
   (fn [db [_ path]]
     (assoc db :route path)))
+
+(re-frame/reg-event-fx
+  ::route-to
+  (fn [_ [_ handler]]
+    {:navigate handler}))

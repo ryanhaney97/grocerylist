@@ -3,7 +3,8 @@
     [re-frame.core :as re-frame]
     [grocerylist.subs :as subs]
     [grocerylist.events :as events]
-    [grocerylist.util :as u]))
+    [grocerylist.util :as u]
+    [grocerylist.routes :as routes]))
 
 (defn draw-item-delete-button [id]
   (let [on-click-delete (fn [id] (re-frame/dispatch [::events/delete-item id]))
@@ -212,9 +213,10 @@
    [draw-location-form]
    [draw-location-list]])
 
+(defmethod routes/panels :list [] [main-list-panel])
+(defmethod routes/panels :additem [] [add-item-panel])
+(defmethod routes/panels :locations [] [location-panel])
+
 (defn main-router []
   (let [route @(re-frame/subscribe [::subs/route])]
-    (condp = route
-      :list [main-list-panel]
-      :additem [add-item-panel]
-      :locations [location-panel])))
+    (routes/panels route)))
