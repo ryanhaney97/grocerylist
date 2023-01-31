@@ -2,8 +2,7 @@
   (:require
     [bidi.bidi :as bidi]
     [pushy.core :as pushy]
-    [re-frame.core :as re-frame]
-    [grocerylist.events :as events]))
+    [re-frame.core :as re-frame]))
 
 (defmulti panels identity)
 (defmethod panels :default [] [:div "No panel found for this route."])
@@ -11,9 +10,9 @@
 (def routes
   (atom
     ["/" {"" :lists
-          "new" :newlist
+          "new" :new-list
           [:id ""] :list
-          [:id "/add"] :additem
+          [:id "/add"] :add-item
           [:id "/locations"] :locations}]))
 
 (defn parse
@@ -29,7 +28,7 @@
 
 (defn dispatch
   [route]
-  (re-frame/dispatch [::events/set-route route]))
+  (re-frame/dispatch [:grocerylist.events.route/set route]))
 
 (defonce history
          (pushy/pushy dispatch parse))
@@ -41,8 +40,3 @@
 (defn start!
   []
   (pushy/start! history))
-
-(re-frame/reg-fx
-  :navigate
-  (fn [handler]
-    (navigate! handler)))

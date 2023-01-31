@@ -1,7 +1,7 @@
 (ns grocerylist.db)
 
 (def default-db
-  {:lists {0 {:listname "Grocery List"
+  {:lists {0 {:name "Grocery List"
               :items {}
               :items.next-id 0
               :locations ["Produce"
@@ -15,7 +15,4 @@
    :route :lists
    :current-list-id 0
    :lists.next-id 1
-   :itemform {:name ""}
-   :locationform {:name ""}
-   :listform {:name ""}
    :location.dragged nil})

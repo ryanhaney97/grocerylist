@@ -21,7 +21,7 @@
          db @re-frame.db/app-db
          locations (get-in db [:lists (:current-list-id db) :locations])
          location (get locations (rand-int (count locations)))]
-     (re-frame.core/dispatch [:grocerylist.events/add-item (rand-word n) location]))))
+     (re-frame.core/dispatch [:grocerylist.events.list/add-item (rand-word n) location]))))
 
 (defn add-rand-items!
   ([numitems minlen maxlen]
