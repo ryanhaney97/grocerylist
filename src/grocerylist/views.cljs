@@ -148,8 +148,8 @@
   [:div
    [draw-back-button]
    [:h1 "Add New Item"]
-   [item-name-input]
    [item-location-input]
+   [item-name-input]
    [:button {:type "button"
              :on-click #(re-frame/dispatch [::events/itemform.reset])}
     "Reset"]
