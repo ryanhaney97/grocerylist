@@ -1,0 +1,18 @@
+table,td,th {
+    border: solid black thin;
+    border-collapse: collapse;
+}
+
+.hidden {
+    opacity: 0.0;
+}
+
+.editname {
+    border: 0;
+}
+
+td select {
+    border:none;
+    appearance: none;
+    background: none;
+}
