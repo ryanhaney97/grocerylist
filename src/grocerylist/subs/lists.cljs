@@ -10,6 +10,11 @@
   :-> :lists)
 
 (re-frame/reg-sub
+  ::count
+  :<- [::lists]
+  :-> count)
+
+(re-frame/reg-sub
   ::current-list
   :<- [::lists]
   :<- [::current-list-id]

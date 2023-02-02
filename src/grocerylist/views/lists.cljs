@@ -28,8 +28,15 @@
     [:ul
      (map (fn [list] [draw-list-link {:key (:id list)} list]) lists)]))
 
+(defn header-text []
+  (let [num-lists (re-frame/subscribe [::subs.lists/count])]
+    (fn []
+      (if (= @num-lists 0)
+        [:h2 "Please make a new list by clicking the button below."]
+        [:h1 "Select a list"]))))
+
 (defn lists-panel []
   [:div
-   [:h1 "Select a list"]
+   [header-text]
    [lists-list]
    [u/nav-button :new-list "New"]])
