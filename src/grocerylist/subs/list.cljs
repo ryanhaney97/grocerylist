@@ -60,3 +60,8 @@
   :<- [::item-name-lengths]
   (fn [lengths]
     (apply max lengths)))
+
+(re-frame/reg-sub
+  ::item-count
+  :<- [::items]
+  :-> count)

@@ -107,8 +107,15 @@
    [:tbody
     (let [id-list @(re-frame/subscribe [::subs.list/sorted-ids])]
       (map (fn [id] [draw-item {:key id} id]) id-list))]])
+
+(defn item-list-or-message []
+  (let [item-count (re-frame/subscribe [::subs.list/item-count])]
+    (fn []
+      (if (= @item-count 0)
+        [:p "There are currently no items in this list! Please add some using the \"Add\" button above."]
+        [item-list]))))
 (defn list-panel []
   [:div
    [list-header]
    [nav-buttons]
-   [item-list]])
+   [item-list-or-message]])
