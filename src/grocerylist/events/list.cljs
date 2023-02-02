@@ -51,3 +51,9 @@
         (assoc db :sort-method sort-method
                   :sort-reversed? false))
       db)))
+
+(reg-event-persistent-db
+  ::update-list-name
+  [select-list]
+  (fn [db [_ new-name]]
+    (assoc db :name new-name)))
