@@ -12,7 +12,7 @@
           (assoc-in [:lists new-id] {:name name
                                      :items {}
                                      :items.next-id 0
-                                     :locations []})
+                                     :locations ["Unknown"]})
           (update :lists.next-id inc)))))
 
 (reg-event-persistent-db
