@@ -29,7 +29,7 @@
   (u/button-factory
     "X"
     (fn [id]
-      (re-frame/dispatch [::events.locations/confirm-delete id]))))
+      (re-frame/dispatch-sync [::events.locations/confirm-delete id]))))
 
 (defn location-item [_ location index]
   (let [on-drag-start (fn [index] (re-frame/dispatch [::events.locations/drag-start index]))

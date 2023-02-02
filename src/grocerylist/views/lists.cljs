@@ -16,7 +16,7 @@
   (u/button-factory
     "X"
     (fn [id]
-      (re-frame/dispatch [::events.lists/confirm-delete id]))))
+      (re-frame/dispatch-sync [::events.lists/confirm-delete id]))))
 
 (defn draw-list-link [_ list]
   [:li
