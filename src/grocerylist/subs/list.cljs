@@ -48,3 +48,15 @@
   :<- [::items]
   (fn [items [_ id]]
     (get items id)))
+
+(re-frame/reg-sub
+  ::item-name-lengths
+  :<- [::items]
+  (fn [items]
+    (map (comp count :name) (vals items))))
+
+(re-frame/reg-sub
+  ::max-item-length
+  :<- [::item-name-lengths]
+  (fn [lengths]
+    (apply max lengths)))

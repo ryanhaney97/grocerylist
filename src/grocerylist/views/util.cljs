@@ -40,7 +40,7 @@
         on-key-down (fn [event]
                       (if (= (.-key event) "Enter")
                         (re-frame/dispatch [submit-event])))]
-    (fn []
+    (fn [& _]
       [:input {:name name
                :type "text"
                :value @value

@@ -7,8 +7,18 @@
     [grocerylist.subs.locations :as subs.locations]))
 
 (defn list-header []
-  (let [name @(re-frame/subscribe [::subs.list/name])]
-    [:h1 name]))
+  (let [list-name (re-frame/subscribe [::subs.list/name])
+        on-name-change (fn [event] (re-frame/dispatch-sync [::events.list/update-list-name (.-value (.-target event))]))
+        on-enter (fn [event]
+                   (if (= (.-key event) "Enter")
+                     (.blur (.-target event))))]
+    (fn []
+      [:input {:type "text"
+               :value @list-name
+               :on-change on-name-change
+               :on-key-down on-enter
+               :class "h1 edit-name"
+               :size (count @list-name)}])))
 
 (defn nav-buttons []
   [:div
@@ -35,14 +45,15 @@
         name-change-factory (u/callback-factory-factory on-name-change)
         on-enter (fn [event]
                    (if (= (.-key event) "Enter")
-                     (.blur (.-target event))))]
+                     (.blur (.-target event))))
+        max-length (re-frame/subscribe [::subs.list/max-item-length])]
     (fn [name id]
       [:input {:type "text"
                :value name
                :on-change (name-change-factory id)
                :on-key-down on-enter
-               :class "editname"
-               :size (count name)}])))
+               :class "edit-name"
+               :size @max-length}])))
 
 (defn item-location [_ location id]
   (let [locations (re-frame/subscribe [::subs.locations/list])
@@ -91,7 +102,7 @@
     [column-header :checked? "Checked"]]])
 
 (defn item-list []
-  [:table {:class "itemtable"}
+  [:table {:class "item-table"}
    [table-header]
    [:tbody
     (let [id-list @(re-frame/subscribe [::subs.list/sorted-ids])]

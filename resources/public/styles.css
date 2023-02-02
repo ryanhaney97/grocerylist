@@ -7,8 +7,15 @@ table,td,th {
     opacity: 0.0;
 }
 
-.editname {
+.edit-name {
     border: 0;
+}
+
+.h1 {
+    display: block;
+    font-size: 2em;
+    margin: 0.67em 0;
+    font-weight: bold;
 }
 
 td select {
