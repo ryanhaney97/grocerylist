@@ -1,8 +1,10 @@
 (ns grocerylist.events.forms.item
   (:require
+    [cljs.spec.alpha :as s]
     [re-frame.core :as re-frame]
     [grocerylist.events.util :refer [select-list]]
-    [grocerylist.events.list :as list]))
+    [grocerylist.events.list :as list]
+    [grocerylist.spec.item :as spec.item]))
 
 (defn update-name [db [_ name]]
   (assoc-in db [:forms :item :name] name))
@@ -16,13 +18,21 @@
   ::update-location
   update-location)
 
+(defn location-in-locations? [db item]
+  (> (.indexOf (:locations db) (:location item)) -1))
 (defn submit [{db :db}]
-  (let [name (get-in db [:forms :item :name] "")
-        location (get-in db [:forms :item :location] (first (:locations db)))]
-    (if (and (not= name "") (> (.indexOf (:locations db) location) -1))
-      {:fx [[:dispatch [::list/add-item name location]]
+  (let [item-name (get-in db [:forms :item :name] "")
+        location (get-in db [:forms :item :location] (first (:locations db)))
+        item {:name item-name
+              :location location
+              :checked? false}
+        validation-spec (s/and ::spec.item/item (partial location-in-locations? db))]
+    (if (s/valid? validation-spec item)
+      {:fx [[:dispatch [::list/add-item (:name item) (:location item)]]
             [:dispatch [::update-name ""]]]}
-      {})))
+      (do
+        (s/explain validation-spec item)
+        {}))))
 (re-frame/reg-event-fx
   ::submit
   [select-list]

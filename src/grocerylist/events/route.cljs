@@ -3,7 +3,7 @@
     [re-frame.core :as re-frame]
     [grocerylist.fx :as fx]))
 
-(defn set [{db :db} [_ route]]
+(defn set-route [{db :db} [_ route]]
   (let [current-list-id (get-in route [:route-params :id] (:current-list-id db))
         new-db (assoc db
                  :route (:handler route)
@@ -14,7 +14,7 @@
        :fx [[:dispatch [:grocerylist.events.forms/reset]]]})))
 (re-frame/reg-event-fx
   ::set
-  set)
+  set-route)
 
 (defn to [{db :db} [_ handler id]]
   {::fx/navigate [handler :id (if id
