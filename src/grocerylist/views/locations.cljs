@@ -3,6 +3,7 @@
     [grocerylist.views.util :as u]
     [grocerylist.subs.locations :as subs.locations]
     [grocerylist.subs.forms.location :as subs.forms.location]
+    [grocerylist.subs.errors :as errors]
     [grocerylist.events.locations :as events.locations]
     [grocerylist.events.forms.location :as events.forms.location]
     [re-frame.core :as re-frame]))
@@ -12,6 +13,12 @@
     "Add"
     (fn []
       (re-frame/dispatch [::events.forms.location/submit]))))
+
+(defn location-error []
+  (let [error-message @(re-frame/subscribe [::errors/location-form])]
+    (when error-message
+      [:div {:class "error"}
+       error-message])))
 
 (defn location-text-input []
   (u/form-text-input-factory
@@ -23,7 +30,8 @@
   [:div
    [:label {:for "location"} "New Location: "]
    [location-text-input]
-   [add-button]])
+   [add-button]
+   [location-error]])
 
 (def location-delete-button
   (u/button-factory

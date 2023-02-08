@@ -11,6 +11,10 @@ table,td,th {
     border: 0;
 }
 
+.error {
+    color: crimson;
+}
+
 .h1 {
     display: block;
     font-size: 2em;

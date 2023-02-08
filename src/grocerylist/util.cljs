@@ -31,7 +31,7 @@
 (defn sort-by-checked
   ([locations item-coll reversed?]
    (let [grouped-items (group-by :checked? item-coll)]
-    (concat (sort-by-location locations (get grouped-items reversed? [])) (sort-by-location locations (get grouped-items (not reversed?) [])))))
+     (concat (sort-by-location locations (get grouped-items reversed? [])) (sort-by-location locations (get grouped-items (not reversed?) [])))))
   ([locations item-coll]
    (sort-by-checked locations item-coll false)))
 
@@ -69,3 +69,19 @@
     (if (some identity vs)
       (reduce #(rec-merge %1 %2) v vs)
       (last vs))))
+
+(defn spec-get-in
+  ([path in data]
+   (if (or (nil? data) (and (empty? path) (empty? in)))
+     data
+     (if (= (first path) (first in))
+       (recur (rest path) (rest in) (get data (first in)))
+       (if (list? data)
+         (recur path (rest in) [(first in) (when (and (int? (first in)) (> (count data) (first in)))
+                                             (nth data (first in)))])
+         (recur path (rest in) [(first in) (get data (first in))])))))
+  ([explained-data]
+   (let [data (:cljs.spec.alpha/value explained-data)
+         problems (:cljs.spec.alpha/problems explained-data)]
+     (map (fn [problem]
+            (spec-get-in (:path problem) (:in problem) data)) problems))))

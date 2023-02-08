@@ -7,7 +7,8 @@
   (let [current-list-id (get-in route [:route-params :id] (:current-list-id db))
         new-db (assoc db
                  :route (:handler route)
-                 :current-list-id current-list-id)]
+                 :current-list-id current-list-id
+                 :errors {})]
     (if (= (:current-list-id new-db) (:current-list-id db))
       {:db new-db}
       {:db new-db

@@ -3,8 +3,21 @@
     [re-frame.core :as re-frame]
     [grocerylist.subs.locations :as subs.locations]
     [grocerylist.subs.forms.item :as subs.forms.item]
+    [grocerylist.subs.errors :as errors]
     [grocerylist.events.forms.item :as events.forms.item]
     [grocerylist.views.util :as u]))
+
+(defn item-name-errors []
+  (let [error-message @(re-frame/subscribe [::errors/item-form :name])]
+    (if error-message
+      [:div {:class "error"}
+       error-message])))
+
+(defn item-location-errors []
+  (let [error-message @(re-frame/subscribe [::errors/item-form :location])]
+    (if error-message
+      [:div {:class "error"}
+       error-message])))
 
 (defn item-name-input []
   (u/form-text-input-factory
@@ -44,9 +57,11 @@
    [:h1 "Add New Item"]
    [:div
     [:label {:for "location"} "Item Location: "]
-    [item-location-input]]
+    [item-location-input]
+    [item-location-errors]]
    [:div
     [:label {:for "name"} "Item Name: "]
-    [item-name-input]]
+    [item-name-input]
+    [item-name-errors]]
    [reset-button]
    [add-button]])
