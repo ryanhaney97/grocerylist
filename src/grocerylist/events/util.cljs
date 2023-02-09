@@ -1,7 +1,9 @@
 (ns grocerylist.events.util
   (:require
     [akiroz.re-frame.storage :as storage]
-    [re-frame.core :as re-frame]))
+    [re-frame.core :as re-frame]
+    [cljs.spec.alpha :as s]
+    [grocerylist.spec.db :as spec.db]))
 
 (def persist-keys [:lists :lists.next-id])
 (defn reg-event-persistent-db
@@ -30,3 +32,10 @@
                      (assoc-in [:effects :db :lists current-list-id] updated-list)
                      (update-in [:effects :db] (fn [db] (apply dissoc db list-keys)))))
                context))))
+
+(defn verify-db-sub [db _]
+  (if (s/valid? ::spec.db/db db)
+    (assoc-in db [:errors :db] nil)
+    (assoc-in db [:errors :db] (s/explain-data ::spec.db/db db))))
+(def verify-db (re-frame/enrich verify-db-sub))
+(re-frame/reg-global-interceptor verify-db)
