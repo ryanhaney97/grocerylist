@@ -20,7 +20,10 @@
   (let [location (nth (:locations db) itemnum)]
     (-> db
         (update :locations u/removenth itemnum)
-        (update :items remove-items-with-location location))))
+        (update :items remove-items-with-location location)
+        (#(if (= (get-in %1 [:forms :item :location]) location)
+           (update-in %1 [:forms :item] dissoc :location)
+           %1)))))
 (reg-event-persistent-db
   ::delete
   [select-list]
