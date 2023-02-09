@@ -14,7 +14,11 @@
   (let [messages @(re-frame/subscribe [::errors/db])]
     (when messages
       [:div {:class "error"}
-       messages])))
+       [:div {:class "error"}
+        "INTERNAL ERROR, PLEASE FORWARD THE FOLLOWING TO THE DEVELOPER: "]
+       (map-indexed (fn [index message] [:div {:class "error"
+                                               :key index}
+                                         message]) messages)])))
 
 (defmethod routes/panels :new-list [] [add-list-panel])
 (defmethod routes/panels :lists [] [lists-panel])

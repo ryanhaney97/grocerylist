@@ -162,8 +162,9 @@
 (defn get-db-error-messages [error-data]
   (when error-data
     (let [problems (::s/problems error-data)]
-      (map #(if %1 %1 "An unknown error has occurred!")
-           (map (partial get-message db-error-message-map) problems)))))
+      (conj (list (str "Full Message: " (s/explain-str (::s/spec error-data) (::s/value error-data))))
+        (map #(if %1 %1 "An unknown error has occurred!")
+           (map (partial get-message db-error-message-map) problems))))))
 
 (re-frame/reg-sub
   ::db
