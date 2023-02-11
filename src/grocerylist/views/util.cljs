@@ -46,3 +46,12 @@
                :value @value
                :on-change on-change
                :on-key-down on-key-down}])))
+(defn display-errors [& subscription-vector]
+  (let [messages @(re-frame/subscribe (into [] subscription-vector))]
+    (when messages
+      [:div
+       (map-indexed
+         (fn [index message]
+           [:div {:class "error"
+                  :key index}
+            message]) messages)])))

@@ -4,21 +4,44 @@
     [re-frame.core :as re-frame]
     [grocerylist.events.list :as events.list]
     [grocerylist.subs.list :as subs.list]
-    [grocerylist.subs.locations :as subs.locations]))
+    [grocerylist.subs.locations :as subs.locations]
+    [grocerylist.subs.errors :as errors]))
 
-(defn list-header []
-  (let [list-name (re-frame/subscribe [::subs.list/name])
-        on-name-change (fn [event] (re-frame/dispatch-sync [::events.list/update-list-name (.-value (.-target event))]))
+(defn list-name-display []
+  (let [on-click #(re-frame/dispatch [::events.list/edit-name-start])
+        name (re-frame/subscribe [::subs.list/name])]
+    (fn []
+      [:div {:class "h1"
+             :on-click on-click}
+       @name])))
+
+(defn list-name-edit []
+  (let [list-name (re-frame/subscribe [::subs.list/name.edited])
+        on-name-change (fn [event] (re-frame/dispatch-sync [::events.list/edit-name (.-value (.-target event))]))
         on-enter (fn [event]
                    (if (= (.-key event) "Enter")
-                     (.blur (.-target event))))]
+                     (.blur (.-target event))))
+        on-blur #(re-frame/dispatch [::events.list/edit-name-submit])]
     (fn []
-      [:input {:type "text"
+      [:input {:id "edit-list-name"
+               :type "text"
                :value @list-name
                :on-change on-name-change
                :on-key-down on-enter
+               :on-blur on-blur
                :class "h1 edit-name"
                :size (count @list-name)}])))
+
+(defn list-name-errors []
+  [u/display-errors ::errors/list-form])
+
+(defn list-header []
+  (let [editing? @(re-frame/subscribe [::subs.list/name.editing?])]
+    (if editing?
+      [:div
+       [list-name-errors]
+       [list-name-edit]]
+      [list-name-display])))
 
 (defn nav-buttons []
   [:div

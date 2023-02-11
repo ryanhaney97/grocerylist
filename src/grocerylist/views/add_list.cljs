@@ -20,10 +20,7 @@
       (re-frame/dispatch [::events.forms.list/submit]))))
 
 (defn list-name-errors []
-  (let [error-messages @(re-frame/subscribe [::errors/list-form])]
-    (when error-messages
-      [:div {:class "error"}
-       error-messages])))
+  [u/display-errors ::errors/list-form])
 (defn add-list-panel []
   [:div
    [:h1 "Create a New List"]

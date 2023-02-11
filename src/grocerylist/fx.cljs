@@ -1,6 +1,7 @@
 (ns grocerylist.fx
   (:require
     [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [grocerylist.routes :as routes]))
 
 (re-frame/reg-fx
@@ -17,3 +18,8 @@
   ::navigate
   (fn [handler]
     (routes/navigate! handler)))
+
+(re-frame/reg-fx
+  ::focus-element
+  (fn [id]
+    (reagent/after-render #(some-> js/document (.getElementById id) .focus))))

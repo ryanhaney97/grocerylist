@@ -15,10 +15,7 @@
       (re-frame/dispatch [::events.forms.location/submit]))))
 
 (defn location-error []
-  (let [error-message @(re-frame/subscribe [::errors/location-form])]
-    (when error-message
-      [:div {:class "error"}
-       error-message])))
+  [u/display-errors ::errors/location-form])
 
 (defn location-text-input []
   (u/form-text-input-factory

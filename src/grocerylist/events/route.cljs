@@ -8,7 +8,8 @@
         new-db (assoc db
                  :route (:handler route)
                  :current-list-id current-list-id
-                 :errors {})]
+                 :errors {}
+                 :edit {})]
     (if (= (:current-list-id new-db) (:current-list-id db))
       {:db new-db}
       {:db new-db

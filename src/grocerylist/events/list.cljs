@@ -3,7 +3,9 @@
     [cljs.spec.alpha :as s]
     [re-frame.core :as re-frame]
     [grocerylist.util :as u]
-    [grocerylist.events.util :refer [reg-event-persistent-db select-list]]))
+    [grocerylist.spec.db :as spec.db]
+    [grocerylist.events.util :refer [reg-event-persistent-db select-list]]
+    [grocerylist.fx :as fx]))
 
 (defn add-item [db [_ item-name item-location]]
   (let [id (:items.next-id db)]
@@ -65,3 +67,28 @@
   ::update-list-name
   [select-list]
   update-list-name)
+
+(re-frame/reg-event-fx
+  ::edit-name-start
+  [select-list]
+  (fn [{db :db}]
+    {:db (assoc-in db [:edit :list :name] (:name db))
+     :fx [[::fx/focus-element "edit-list-name"]]}))
+
+(re-frame/reg-event-db
+  ::edit-name
+  (fn [db [_ new-name]]
+    (assoc-in db [:edit :list :name] new-name)))
+
+(re-frame/reg-event-fx
+  ::edit-name-submit
+  (fn [{db :db}]
+    (let [new-name (get-in db [:edit :list :name])
+          new-db (assoc-in db [:lists (:current-list-id db) :name] new-name)]
+      (if (s/valid? ::spec.db/db new-db)
+        {:db (-> db
+                 (update-in [:edit :list] dissoc :name)
+                 (update-in [:errors :forms] dissoc :list))
+         :fx [[:dispatch [::update-list-name new-name]]]}
+        {:db (assoc-in db [:errors :forms :list] (s/explain-data ::spec.db/db new-db))
+         :fx [[::fx/focus-element "edit-list-name"]]}))))

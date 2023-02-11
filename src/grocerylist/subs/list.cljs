@@ -65,3 +65,13 @@
   ::item-count
   :<- [::items]
   :-> count)
+
+(re-frame/reg-sub
+  ::name.edited
+  (fn [db]
+    (get-in db [:edit :list :name])))
+
+(re-frame/reg-sub
+  ::name.editing?
+  :<- [::name.edited]
+  some?)

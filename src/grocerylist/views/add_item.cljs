@@ -8,16 +8,10 @@
     [grocerylist.views.util :as u]))
 
 (defn item-name-errors []
-  (let [error-message @(re-frame/subscribe [::errors/item-form :name])]
-    (if error-message
-      [:div {:class "error"}
-       error-message])))
+  [u/display-errors ::errors/item-form :name])
 
 (defn item-location-errors []
-  (let [error-message @(re-frame/subscribe [::errors/item-form :location])]
-    (if error-message
-      [:div {:class "error"}
-       error-message])))
+  [u/display-errors ::errors/item-form :location])
 
 (defn item-name-input []
   (u/form-text-input-factory
