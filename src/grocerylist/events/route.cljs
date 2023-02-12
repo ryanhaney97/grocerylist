@@ -9,7 +9,7 @@
                  :route (:handler route)
                  :current-list-id current-list-id
                  :errors {}
-                 :edit {})]
+                 :edits {})]
     (if (= (:current-list-id new-db) (:current-list-id db))
       {:db new-db}
       {:db new-db

@@ -49,6 +49,24 @@
   (fn [items [_ id]]
     (get items id)))
 
+(defn item-id-signal-fn [[_ id] _]
+  (re-frame/subscribe [::item-by-id id]))
+
+(re-frame/reg-sub
+  ::item-name
+  item-id-signal-fn
+  :-> :name)
+
+(re-frame/reg-sub
+  ::item-location
+  item-id-signal-fn
+  :-> :location)
+
+(re-frame/reg-sub
+  ::item-checked?
+  item-id-signal-fn
+  :-> :checked?)
+
 (re-frame/reg-sub
   ::item-name-lengths
   :<- [::items]
@@ -67,11 +85,28 @@
   :-> count)
 
 (re-frame/reg-sub
+  ::edits
+  :-> :edits)
+
+(re-frame/reg-sub
   ::name.edited
-  (fn [db]
-    (get-in db [:edit :list :name])))
+  :<- [::edits]
+  (fn [edits]
+    (get-in edits [:list :name])))
 
 (re-frame/reg-sub
   ::name.editing?
   :<- [::name.edited]
-  some?)
+  :-> some?)
+
+(re-frame/reg-sub
+  ::item-name.edited
+  :<- [::edits]
+  (fn [edits [_ id]]
+    (get-in edits [:items id :name])))
+
+(re-frame/reg-sub
+  ::item-name.editing?
+  (fn [[_ id] _]
+    (re-frame/subscribe [::item-name.edited id]))
+  :-> some?)

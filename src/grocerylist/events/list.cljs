@@ -4,6 +4,7 @@
     [re-frame.core :as re-frame]
     [grocerylist.util :as u]
     [grocerylist.spec.db :as spec.db]
+    [grocerylist.spec.list :as spec.list]
     [grocerylist.events.util :refer [reg-event-persistent-db select-list]]
     [grocerylist.fx :as fx]))
 
@@ -72,23 +73,49 @@
   ::edit-name-start
   [select-list]
   (fn [{db :db}]
-    {:db (assoc-in db [:edit :list :name] (:name db))
+    {:db (assoc-in db [:edits :list :name] (:name db))
      :fx [[::fx/focus-element "edit-list-name"]]}))
 
 (re-frame/reg-event-db
   ::edit-name
   (fn [db [_ new-name]]
-    (assoc-in db [:edit :list :name] new-name)))
+    (assoc-in db [:edits :list :name] new-name)))
 
 (re-frame/reg-event-fx
   ::edit-name-submit
   (fn [{db :db}]
-    (let [new-name (get-in db [:edit :list :name])
+    (let [new-name (get-in db [:edits :list :name])
           new-db (assoc-in db [:lists (:current-list-id db) :name] new-name)]
       (if (s/valid? ::spec.db/db new-db)
         {:db (-> db
-                 (update-in [:edit :list] dissoc :name)
+                 (update-in [:edits :list] dissoc :name)
                  (update-in [:errors :forms] dissoc :list))
          :fx [[:dispatch [::update-list-name new-name]]]}
         {:db (assoc-in db [:errors :forms :list] (s/explain-data ::spec.db/db new-db))
          :fx [[::fx/focus-element "edit-list-name"]]}))))
+
+(re-frame/reg-event-fx
+  ::edit-item-name-start
+  [select-list]
+  (fn [{db :db} [_ id]]
+    {:db (assoc-in db [:edits :items id :name] (get-in db [:items id :name]))
+     :fx [[::fx/focus-element (str "edit-item-name-" id)]]}))
+
+(re-frame/reg-event-db
+  ::edit-item-name
+  (fn [db [_ id new-name]]
+    (assoc-in db [:edits :items id :name] new-name)))
+
+(re-frame/reg-event-fx
+  ::edit-item-name-submit
+  (fn [{db :db} [_ id]]
+    (let [new-name (get-in db [:edits :items id :name])
+          list (get-in db [:lists (:current-list-id db)])
+          new-list (assoc-in list [:items id :name] new-name)]
+      (if (s/valid? ::spec.list/list new-list)
+        {:db (-> db
+                 (update-in [:edits :items] dissoc id)
+                 (update-in [:errors :forms] dissoc :item))
+         :fx [[:dispatch [::update-item-name id new-name]]]}
+        {:db (assoc-in db [:errors :forms :item] (s/explain-data ::spec.list/list new-list))
+         :fx [[::fx/focus-element (str "edit-item-name-" id)]]}))))

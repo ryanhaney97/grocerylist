@@ -11,8 +11,37 @@ table,td,th {
     border: 0;
 }
 
+td input.edit-name {
+    box-sizing: border-box;
+    border: 0;
+    width: 100%;
+    white-space: pre;
+    display: block;
+    resize: horizontal;
+}
+td input.edit-name:active {
+    width:auto;
+}
+
+td.edit-name, .input-sizer {
+    font-family: sans-serif;
+}
+
+.input-sizer {
+    visibility: hidden;
+    display:block;
+    white-space: pre;
+    height: 0;
+}
+
+/*.input-container {*/
+/*    display: inline-block;*/
+/*    position: relative;*/
+/*}*/
+
 .error {
     color: crimson;
+    display:block;
 }
 
 .h1 {
