@@ -27,20 +27,6 @@
   [select-list]
   delete)
 
-;(defn confirm-delete [{db :db} [_ itemnum]]
-;  (let [location (nth (:locations db) itemnum)
-;        location-counts (frequencies (map :location (vals (:items db))))
-;        num-references (get location-counts location 0)]
-;    (if (= num-references 0)
-;      {:fx [[:dispatch [::delete itemnum]]]}
-;      {:fx [[::fx/confirm-dialog
-;             {:message    (str "There are currently " num-references " items located in " location " that will be deleted as well. Do you still want to delete " location " ?")
-;              :on-confirm #(re-frame/dispatch [::delete itemnum])}]]})))
-;(re-frame/reg-event-fx
-;  ::confirm-delete
-;  [select-list]
-;  confirm-delete)
-
 (defn drag-start [db [_ itemnum]]
   (assoc db :location.dragged itemnum))
 (re-frame/reg-event-db
