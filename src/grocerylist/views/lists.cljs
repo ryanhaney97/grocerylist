@@ -2,22 +2,10 @@
   (:require
     [re-frame.core :as re-frame]
     [grocerylist.events.route :as events.route]
-    [grocerylist.events.lists :as events.lists]
+    [grocerylist.events.confirm :as events.confirm]
     [grocerylist.subs.lists :as subs.lists]
     [grocerylist.views.util :as u]
     [semantic-ui-reagent.core :as sui]))
-
-(defn list-button [list-name]
-  (u/button-factory
-    list-name
-    (fn [id]
-      (re-frame/dispatch [::events.route/to :list id]))))
-
-(def list-delete-button
-  (u/button-factory
-    "X"
-    (fn [id]
-      (re-frame/dispatch-sync [::events.lists/confirm-delete id]))))
 
 (defn draw-list-name [id]
   (let [on-click (fn [id]
@@ -32,7 +20,7 @@
 
 (defn draw-list-delete-button [id]
   (let [on-click (fn [id]
-                   (re-frame/dispatch-sync [::events.lists/confirm-delete id]))
+                   (re-frame/dispatch [::events.confirm/delete-list id]))
         on-click-factory (u/callback-factory-factory on-click)]
     (fn [id]
       [sui/Button {:on-click (on-click-factory id)

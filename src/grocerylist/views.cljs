@@ -9,6 +9,7 @@
     [grocerylist.views.add-list :refer [add-list-panel]]
     [grocerylist.views.add-item :refer [add-item-panel]]
     [grocerylist.views.locations :refer [location-panel]]
+    [grocerylist.views.confirm :refer [confirm-dialog]]
     [grocerylist.routes :as routes]))
 
 (defn error-message []
@@ -35,5 +36,6 @@
 (defn main-router []
   (let [route @(re-frame/subscribe [::subs/route])]
     [:div
+     [confirm-dialog]
      [error-message]
      (routes/panels route)]))

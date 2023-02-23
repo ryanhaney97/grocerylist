@@ -6,6 +6,7 @@
     [grocerylist.subs.errors :as errors]
     [grocerylist.events.locations :as events.locations]
     [grocerylist.events.forms.location :as events.forms.location]
+    [grocerylist.events.confirm :as events.confirm]
     [semantic-ui-reagent.core :as sui]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]))
@@ -50,7 +51,7 @@
        [location-name-field]])))
 
 (defn location-delete-button [id]
-  (let [on-click (fn [id] (re-frame/dispatch-sync [::events.locations/confirm-delete id]))
+  (let [on-click (fn [id] (re-frame/dispatch [::events.confirm/delete-location id]))
         on-click-factory (u/callback-factory-factory on-click)]
     (fn [id]
       [sui/Button {:on-click (on-click-factory id)
