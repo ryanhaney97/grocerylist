@@ -1,58 +1,70 @@
-table,td,th {
-    border: solid black thin;
-    border-collapse: collapse;
-}
+/*table,td,th {*/
+/*    border: solid black thin;*/
+/*    border-collapse: collapse;*/
+/*}*/
 
-.hidden {
-    opacity: 0.0;
-}
+/*.hidden-column {*/
+/*    background: none !important;*/
+/*    border: none !important;*/
+/*}*/
 
-.edit-name {
-    border: 0;
-}
+/*.hidden {*/
+/*    opacity: 0.0;*/
+/*}*/
 
-td input.edit-name {
-    box-sizing: border-box;
-    border: 0;
-    width: 100%;
-    white-space: pre;
-    display: block;
-    resize: horizontal;
-}
-td input.edit-name:active {
-    width:auto;
-}
+/*.edit-name {*/
+/*    border: 0;*/
+/*}*/
 
-td.edit-name, .input-sizer {
-    font-family: sans-serif;
-}
+/*.resizable {*/
+/*    box-sizing: border-box !important;*/
+/*    !*border: 0 !important;*!*/
+/*    width: 100% !important;*/
+/*    white-space: pre !important;*/
+/*    display: block !important;*/
+/*    resize: horizontal !important;*/
+/*}*/
+/*td input.edit-name:active {*/
+/*    width:auto;*/
+/*}*/
 
-.input-sizer {
-    visibility: hidden;
-    display:block;
-    white-space: pre;
-    height: 0;
-}
+/*.resizable:active {*/
+/*    width:auto !important;*/
+/*}*/
+/*.resizable:focus {*/
+/*    min-width: 200px !important;*/
+/*}*/
+
+/*td.edit-name, .input-sizer {*/
+/*    font-family: sans-serif;*/
+/*}*/
+
+/*.input-sizer {*/
+/*    visibility: hidden;*/
+/*    display:block;*/
+/*    white-space: pre;*/
+/*    height: 0;*/
+/*}*/
 
 /*.input-container {*/
 /*    display: inline-block;*/
 /*    position: relative;*/
 /*}*/
 
-.error {
-    color: crimson;
-    display:block;
-}
+/*.error {*/
+/*    color: crimson;*/
+/*    display:block;*/
+/*}*/
 
-.h1 {
-    display: block;
-    font-size: 2em;
-    margin: 0.67em 0;
-    font-weight: bold;
-}
+/*.h1 {*/
+/*    display: block;*/
+/*    font-size: 2em;*/
+/*    margin: 0.67em 0;*/
+/*    font-weight: bold;*/
+/*}*/
 
-td select {
-    border:none;
-    appearance: none;
-    background: none;
-}
+/*td select {*/
+/*    border:none;*/
+/*    appearance: none;*/
+/*    background: none;*/
+/*}*/

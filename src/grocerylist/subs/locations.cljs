@@ -9,6 +9,15 @@
   :-> :locations)
 
 (re-frame/reg-sub
+  ::options
+  :<- [::list]
+  (fn [location-list]
+    (map (fn [location]
+           {:key  location
+            :text location
+            :value location}) location-list)))
+
+(re-frame/reg-sub
   ::dragged
   :location.dragged)
 
@@ -20,11 +29,21 @@
 
 (re-frame/reg-sub
   ::get
-  :<- [::location-list]
+  :<- [::list]
   (fn [list [_ itemnum]]
     (get list itemnum)))
 
 (re-frame/reg-sub
   ::count
-  :<- [::location-list]
+  :<- [::list]
   :-> count)
+
+(re-frame/reg-sub
+  ::empty?
+  :<- [::list]
+  empty?)
+
+(re-frame/reg-sub
+  ::first
+  :<- [::list]
+  first)

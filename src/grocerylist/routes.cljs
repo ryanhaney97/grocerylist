@@ -8,23 +8,22 @@
 (defmethod panels :default [] [:div "No panel found for this route."])
 
 (def routes
-  (atom
-    ["/" {"" :lists
-          "new" :new-list
-          [:id ""] :list
-          [:id "/add"] :add-item
-          [:id "/locations"] :locations}]))
+  ["/" {"" :lists
+        "new" :new-list
+        [:id ""] :list
+        [:id "/add"] :add-item
+        [:id "/locations"] :locations}])
 
 (defn parse
   [url]
-  (when-let [route (bidi/match-route @routes url)]
+  (when-let [route (bidi/match-route routes url)]
     (if (get-in route [:route-params :id])
       (update-in route [:route-params :id] js/parseInt)
       route)))
 
 (defn url-for
   [& args]
-  (apply bidi/path-for (into [@routes] args)))
+  (apply bidi/path-for (into [routes] args)))
 
 (defn dispatch
   [route]

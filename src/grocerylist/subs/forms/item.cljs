@@ -1,7 +1,8 @@
 (ns grocerylist.subs.forms.item
   (:require
     [re-frame.core :as re-frame]
-    [grocerylist.subs :as subs]))
+    [grocerylist.subs :as subs]
+    [grocerylist.subs.locations :as subs.locations]))
 
 (re-frame/reg-sub
   ::form
@@ -15,5 +16,6 @@
 (re-frame/reg-sub
   ::location
   :<- [::form]
-  (fn [form]
-    (:location form "")))
+  :<- [::subs.locations/first]
+  (fn [[form default-location]]
+    (:location form default-location)))

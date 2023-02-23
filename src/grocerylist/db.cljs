@@ -12,7 +12,7 @@
 
    :sort-method :checked?
    :sort-reversed? false
-   :route :lists
+   :route :loading
    :current-list-id 0
    :lists.next-id 1
    :location.dragged nil})

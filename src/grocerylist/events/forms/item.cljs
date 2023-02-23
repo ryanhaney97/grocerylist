@@ -6,9 +6,28 @@
     [grocerylist.events.list :as list]
     [grocerylist.spec.list :as spec.list]))
 
-(defn update-name [db [_ name]]
-  (assoc-in db [:forms :item :name] name))
+(defn validate [db]
+  (let [item-name (get-in db [:forms :item :name] "")
+        item-location (get-in db [:forms :item :location] (first (:locations db)))
+        new-list (get-in (list/add-item db [nil item-name item-location]) [:lists (:current-list-id db)])]
+    (when (not (s/valid? ::spec.list/list new-list))
+      (s/explain-data ::spec.list/list new-list))))
+
+(defn revalidate [db]
+  (assoc-in db [:errors :forms :item] (validate db)))
+
 (re-frame/reg-event-db
+  ::revalidate
+  revalidate)
+
+(defn update-name [{db :db} [_ name]]
+  (let [result {:db (assoc-in db [:forms :item :name] name)}]
+    (if (get-in db [:errors :forms :item])
+      (assoc result
+        :fx [[:dispatch [::revalidate]]])
+      result)))
+
+(re-frame/reg-event-fx
   ::update-name
   update-name)
 

@@ -131,10 +131,11 @@
 (defn get-item-form-messages [item-error-data [_ kind]]
   (when item-error-data
     (let [problems (::s/problems item-error-data)
-          _ (js/console.log (str problems))
-          problems (if (= kind :all) problems (filter #(= kind (last (:path %1))) problems))]
-      (js/console.log (str problems))
-      (filter identity (map (partial get-message item-form-error-message-map) problems)))))
+          problems (if (= kind :all) problems (filter #(= kind (last (:path %1))) problems))
+          errors (filter not-empty (map (partial get-message item-form-error-message-map) problems))]
+      (if (empty? errors)
+        nil
+        errors))))
 
 (re-frame/reg-sub
   ::item-form
@@ -143,8 +144,11 @@
 
 (defn get-location-form-messages [location-error-data]
   (when location-error-data
-    (let [problems (::s/problems location-error-data)]
-      (filter identity (map (partial get-message location-form-error-message-map) problems)))))
+    (let [problems (::s/problems location-error-data)
+          errors (filter not-empty (map (partial get-message location-form-error-message-map) problems))]
+      (if (empty? errors)
+        nil
+        errors))))
 (re-frame/reg-sub
   ::location-form
   :<- [::location-form.data]
@@ -152,8 +156,11 @@
 
 (defn get-list-form-messages [list-error-data]
   (when list-error-data
-    (let [problems (::s/problems list-error-data)]
-      (filter identity (map (partial get-message list-form-error-message-map) problems)))))
+    (let [problems (::s/problems list-error-data)
+          errors (filter not-empty (map (partial get-message list-form-error-message-map) problems))]
+      (if (empty? errors)
+        nil
+        errors))))
 (re-frame/reg-sub
   ::list-form
   :<- [::list-form.data]
@@ -162,9 +169,10 @@
 (defn get-db-error-messages [error-data]
   (when error-data
     (let [problems (::s/problems error-data)]
-      (conj (list (str "Full Message: " (s/explain-str (::s/spec error-data) (::s/value error-data))))
+      (concat
         (map #(if %1 %1 "An unknown error has occurred!")
-           (map (partial get-message db-error-message-map) problems))))))
+           (map (partial get-message db-error-message-map) problems))
+        (list "Full Message: " (str (s/explain-str (::s/spec error-data) (::s/value error-data))))))))
 
 (re-frame/reg-sub
   ::db

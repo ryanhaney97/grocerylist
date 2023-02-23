@@ -1,6 +1,7 @@
 (ns grocerylist.views.util
   (:require
     [re-frame.core :as re-frame]
+    [semantic-ui-reagent.core :as sui]
     [grocerylist.events.route :as events.route]))
 
 (defn callback-factory-factory
@@ -26,11 +27,10 @@
                   :on-click (apply on-click-factory args)}
          text]))))
 
-(defn nav-button [route text]
+(defn nav-button [route text & {:as props}]
   (let [on-click (fn [] (re-frame/dispatch [::events.route/to route]))]
-    (fn [& _]
-      [:button {:type "button"
-                :on-click on-click}
+    (fn [_ _ & {:as props}]
+      [sui/Button (merge {:on-click on-click} props)
        text])))
 
 (defn form-text-input-factory [name value-sub update-event submit-event]

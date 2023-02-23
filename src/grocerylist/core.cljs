@@ -19,7 +19,7 @@
     (rdom/render [views/main-router] root-el)))
 
 (defn init []
-  (routing/start!)
   (re-frame/dispatch-sync [::events/initialize-db])
+  (routing/start!)
   (dev-setup)
   (mount-root))

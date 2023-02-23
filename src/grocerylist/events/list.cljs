@@ -9,16 +9,16 @@
     [grocerylist.fx :as fx]))
 
 (defn add-item [db [_ item-name item-location]]
-  (let [id (:items.next-id db)]
+  (let [list-id (:current-list-id db)
+        id (get-in db [:lists list-id :items.next-id])]
     (-> db
-        (assoc-in [:items id] {:name item-name
-                               :location item-location
-                               :checked? false
-                               :id id})
-        (update :items.next-id inc))))
+        (assoc-in [:lists list-id :items id] {:name item-name
+                                              :location item-location
+                                              :checked? false
+                                              :id id})
+        (update-in [:lists list-id :items.next-id] inc))))
 (reg-event-persistent-db
   ::add-item
-  [select-list]
   add-item)
 
 (defn delete-item [db [_ id]]

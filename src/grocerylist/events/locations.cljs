@@ -6,10 +6,9 @@
     [grocerylist.events.util :refer [select-list reg-event-persistent-db]]))
 
 (defn add [db [_ location]]
-  (update db :locations conj location))
+  (update-in db [:lists (:current-list-id db) :locations] conj location))
 (reg-event-persistent-db
   ::add
-  [select-list]
   add)
 
 (defn remove-items-with-location [items location]

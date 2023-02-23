@@ -12,7 +12,8 @@
   [akiroz.re-frame/storage "0.1.4"]
   [binaryage/devtools "1.0.6"]
   [bidi "2.1.6"]
-  [clj-commons/pushy "0.3.10"]]
+  [clj-commons/pushy "0.3.10"]
+  [toyokumo/semantic-ui-reagent "0.2.0"]]
 
  :dev-http
  {8280 "resources/public"}
@@ -30,4 +31,5 @@
    {:compiler-options
     {:closure-defines
      {re-frame.trace.trace-enabled?        true
-      day8.re-frame.tracing.trace-enabled? true}}}}}}
+      day8.re-frame.tracing.trace-enabled? true}
+     :warnings {:redef false}}}}}}
