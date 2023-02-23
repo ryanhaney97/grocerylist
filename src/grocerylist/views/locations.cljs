@@ -81,7 +81,8 @@
            location]]]))))
 
 (defn location-list []
-  [sui/Table {:celled true}
+  [sui/Table {:celled true
+              :striped true}
    [sui/TableBody
     (let [list (re-frame/subscribe [::subs.locations/list])]
       (map-indexed (fn [index location] [location-item {:key location} location index]) @list))]])
