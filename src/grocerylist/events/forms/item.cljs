@@ -8,7 +8,7 @@
 
 (defn validate [db]
   (let [item-name (get-in db [:forms :item :name] "")
-        item-location (get-in db [:forms :item :location] (first (:locations db)))
+        item-location (get-in db [:forms :item :location] (first (get-in db [:lists (:current-list-id db) :locations])))
         new-list (get-in (list/add-item db [nil item-name item-location]) [:lists (:current-list-id db)])]
     (when (not (s/valid? ::spec.list/list new-list))
       (s/explain-data ::spec.list/list new-list))))
