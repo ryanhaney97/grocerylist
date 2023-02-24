@@ -1,39 +1,22 @@
 (ns grocerylist.views.add-list
   (:require
     [re-frame.core :as re-frame]
+    [reagent.core :as r]
     [semantic-ui-reagent.core :as sui]
-    [grocerylist.views.util :as u]
     [grocerylist.events.forms.list :as events.forms.list]
     [grocerylist.subs.forms.list :as subs.forms.list]
     [grocerylist.subs.errors :as errors]))
 
 (defn list-name-input []
-  (let [on-name-change (fn [event] (re-frame/dispatch-sync [::events.forms.list/update-name (.-value (.-target event))]))
-        on-submit #(re-frame/dispatch [::events.forms.list/submit])
-        list-name (re-frame/subscribe [::subs.forms.list/name])]
-    (fn []
-      [sui/Input {:action true}
-       [:input {:value @list-name
-                :on-change on-name-change}]
-       [sui/Button {:on-click on-submit
-                    :primary true}
-        "Add"]])))
-
-;(defn list-name-input []
-;  (u/form-text-input-factory
-;    "name"
-;    ::subs.forms.list/name
-;    ::events.forms.list/update-name
-;    ::events.forms.list/submit))
-
-(def add-button
-  (u/button-factory
-    "Add"
-    (fn []
-      (re-frame/dispatch [::events.forms.list/submit]))))
-
-(defn list-name-errors []
-  [u/display-errors ::errors/list-form])
+  (r/with-let [on-name-change (fn [event] (re-frame/dispatch-sync [::events.forms.list/update-name (.-value (.-target event))]))
+               on-submit #(re-frame/dispatch [::events.forms.list/submit])
+               list-name (re-frame/subscribe [::subs.forms.list/name])]
+    [sui/Input {:action true}
+     [:input {:value @list-name
+              :on-change on-name-change}]
+     [sui/Button {:on-click on-submit
+                  :primary true}
+      "Add"]]))
 
 (defn header-text []
   [sui/Header {:as "h1"

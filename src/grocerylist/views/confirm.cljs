@@ -1,5 +1,6 @@
 (ns grocerylist.views.confirm
   (:require
+    [reagent.core :as r]
     [grocerylist.subs.confirm :as subs.confirm]
     [grocerylist.events.confirm :as events.confirm]
     [re-frame.core :as re-frame]
@@ -14,8 +15,8 @@
   [sui/Confirm
    {:open true
     :content message
-    :on-confirm (partial close-and-dispatch confirm-event)
-    :on-cancel (partial close-and-dispatch cancel-event)}])
+    :on-confirm (r/partial close-and-dispatch confirm-event)
+    :on-cancel (r/partial close-and-dispatch cancel-event)}])
 
 (defn confirm-dialog []
   (let [show? @(re-frame/subscribe [::subs.confirm/show?])]
