@@ -1,6 +1,7 @@
 (ns grocerylist.views.confirm
   (:require
     [reagent.core :as r]
+    [grocerylist.views.util :refer [<sub]]
     [grocerylist.subs.confirm :as subs.confirm]
     [grocerylist.events.confirm :as events.confirm]
     [re-frame.core :as re-frame]
@@ -11,17 +12,13 @@
   (when event-vector
     (re-frame/dispatch event-vector)))
 
-(defn confirm-dialog-view [message confirm-event cancel-event]
+(defn confirm-dialog-view []
   [sui/Confirm
    {:open true
-    :content message
-    :on-confirm (r/partial close-and-dispatch confirm-event)
-    :on-cancel (r/partial close-and-dispatch cancel-event)}])
+    :content (<sub [::subs.confirm/message])
+    :on-confirm (r/partial close-and-dispatch (<sub [::subs.confirm/on-confirm]))
+    :on-cancel (r/partial close-and-dispatch (<sub [::subs.confirm/on-cancel]))}])
 
 (defn confirm-dialog []
-  (let [show? @(re-frame/subscribe [::subs.confirm/show?])]
-    (when show?
-      (let [message @(re-frame/subscribe [::subs.confirm/message])
-            confirm-event @(re-frame/subscribe [::subs.confirm/on-confirm])
-            cancel-event @(re-frame/subscribe [::subs.confirm/on-cancel])]
-        [confirm-dialog-view message confirm-event cancel-event]))))
+  (when (<sub [::subs.confirm/show?])
+    [confirm-dialog-view]))

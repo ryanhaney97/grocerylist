@@ -1,8 +1,13 @@
 (ns grocerylist.views.util
   (:require
     [re-frame.core :as re-frame]
+    [reagent.core :as r]
     [semantic-ui-reagent.core :as sui]
     [grocerylist.events.route :as events.route]))
+
+(def <sub (comp deref re-frame.core/subscribe))
+(def >evt (partial r/partial re-frame.core/dispatch))
+(def >evt-now (partial r/partial re-frame.core/dispatch-sync))
 
 (defn callback-factory-factory
   "returns a function which will always return the `same-callback` every time

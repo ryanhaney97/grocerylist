@@ -3,18 +3,17 @@
     [re-frame.core :as re-frame]
     [reagent.core :as r]
     [semantic-ui-reagent.core :as sui]
+    [grocerylist.views.util :refer [<sub >evt]]
     [grocerylist.events.forms.list :as events.forms.list]
     [grocerylist.subs.forms.list :as subs.forms.list]
     [grocerylist.subs.errors :as errors]))
 
 (defn list-name-input []
-  (r/with-let [on-name-change (fn [event] (re-frame/dispatch-sync [::events.forms.list/update-name (.-value (.-target event))]))
-               on-submit #(re-frame/dispatch [::events.forms.list/submit])
-               list-name (re-frame/subscribe [::subs.forms.list/name])]
+  (r/with-let [on-name-change (fn [event] (re-frame/dispatch-sync [::events.forms.list/update-name (.-value (.-target event))]))]
     [sui/Input {:action true}
-     [:input {:value @list-name
+     [:input {:value (<sub [::subs.forms.list/name])
               :on-change on-name-change}]
-     [sui/Button {:on-click on-submit
+     [sui/Button {:on-click (>evt [::events.forms.list/submit])
                   :primary true}
       "Add"]]))
 
@@ -31,7 +30,7 @@
      (apply str (interpose "\n" errors))]))
 
 (defn new-list-form []
-  (let [errors @(re-frame/subscribe [::errors/list-form])]
+  (let [errors (<sub [::errors/list-form])]
     [sui/Form
      [sui/FormField {:error (boolean errors)}
       [:label "List Name: "]
