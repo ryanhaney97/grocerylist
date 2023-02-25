@@ -9,3 +9,7 @@
 (re-frame/reg-sub
   ::forms
   :-> :forms)
+
+(re-frame/reg-sub
+  ::edits
+  :-> :edits)

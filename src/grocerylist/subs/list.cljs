@@ -2,6 +2,7 @@
   (:require
     [grocerylist.util :as u]
     [re-frame.core :as re-frame]
+    [grocerylist.subs :as subs]
     [grocerylist.subs.lists :as lists]
     [grocerylist.subs.locations :as locations]))
 
@@ -44,53 +45,8 @@
     (map :id sorted-list)))
 
 (re-frame/reg-sub
-  ::item-by-id
-  :<- [::items]
-  (fn [items [_ id]]
-    (get items id)))
-
-(defn item-id-signal-fn [[_ id] _]
-  (re-frame/subscribe [::item-by-id id]))
-
-(re-frame/reg-sub
-  ::item-name
-  item-id-signal-fn
-  :-> :name)
-
-(re-frame/reg-sub
-  ::item-location
-  item-id-signal-fn
-  :-> :location)
-
-(re-frame/reg-sub
-  ::item-checked?
-  item-id-signal-fn
-  :-> :checked?)
-
-(re-frame/reg-sub
-  ::item-name-lengths
-  :<- [::items]
-  (fn [items]
-    (map (comp count :name) (vals items))))
-
-(re-frame/reg-sub
-  ::max-item-length
-  :<- [::item-name-lengths]
-  (fn [lengths]
-    (apply max lengths)))
-
-(re-frame/reg-sub
-  ::item-count
-  :<- [::items]
-  :-> count)
-
-(re-frame/reg-sub
-  ::edits
-  :-> :edits)
-
-(re-frame/reg-sub
   ::name.edited
-  :<- [::edits]
+  :<- [::subs/edits]
   (fn [edits]
     (get-in edits [:list :name])))
 
@@ -100,13 +56,6 @@
   :-> some?)
 
 (re-frame/reg-sub
-  ::item-name.edited
-  :<- [::edits]
-  (fn [edits [_ id]]
-    (get-in edits [:items id :name])))
-
-(re-frame/reg-sub
-  ::item-name.editing?
-  (fn [[_ id] _]
-    (re-frame/subscribe [::item-name.edited id]))
-  :-> some?)
+  ::count
+  :<- [::items]
+  :-> count)
