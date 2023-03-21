@@ -1,25 +1,70 @@
-table,td,th {
-    border: solid black thin;
-    border-collapse: collapse;
-}
+/*table,td,th {*/
+/*    border: solid black thin;*/
+/*    border-collapse: collapse;*/
+/*}*/
 
-.hidden {
-    opacity: 0.0;
-}
+/*.hidden-column {*/
+/*    background: none !important;*/
+/*    border: none !important;*/
+/*}*/
 
-.edit-name {
-    border: 0;
-}
+/*.hidden {*/
+/*    opacity: 0.0;*/
+/*}*/
 
-.h1 {
-    display: block;
-    font-size: 2em;
-    margin: 0.67em 0;
-    font-weight: bold;
-}
+/*.edit-name {*/
+/*    border: 0;*/
+/*}*/
 
-td select {
-    border:none;
-    appearance: none;
-    background: none;
-}
+/*.resizable {*/
+/*    box-sizing: border-box !important;*/
+/*    !*border: 0 !important;*!*/
+/*    width: 100% !important;*/
+/*    white-space: pre !important;*/
+/*    display: block !important;*/
+/*    resize: horizontal !important;*/
+/*}*/
+/*td input.edit-name:active {*/
+/*    width:auto;*/
+/*}*/
+
+/*.resizable:active {*/
+/*    width:auto !important;*/
+/*}*/
+/*.resizable:focus {*/
+/*    min-width: 200px !important;*/
+/*}*/
+
+/*td.edit-name, .input-sizer {*/
+/*    font-family: sans-serif;*/
+/*}*/
+
+/*.input-sizer {*/
+/*    visibility: hidden;*/
+/*    display:block;*/
+/*    white-space: pre;*/
+/*    height: 0;*/
+/*}*/
+
+/*.input-container {*/
+/*    display: inline-block;*/
+/*    position: relative;*/
+/*}*/
+
+/*.error {*/
+/*    color: crimson;*/
+/*    display:block;*/
+/*}*/
+
+/*.h1 {*/
+/*    display: block;*/
+/*    font-size: 2em;*/
+/*    margin: 0.67em 0;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*td select {*/
+/*    border:none;*/
+/*    appearance: none;*/
+/*    background: none;*/
+/*}*/
