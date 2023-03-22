@@ -10,15 +10,20 @@
     [semantic-ui-reagent.core :as sui]))
 
 (defn item-delete-button [id]
-  [sui/Button {:on-click (>evt [::events.item/delete id])
-               :icon "delete"
-               :negative true
-               :size "mini"}])
+  [sui/TableCell {:text-align "center"
+                  :selectable true
+                  :on-click (>evt [::events.item/delete id])}
+   [sui/Icon {:name "delete"
+              :color "red"
+              :size "large"
+              :fitted true}]])
 
 (defn item-checkbox [id]
-  [:input {:type "checkbox"
-           :checked (<sub [::subs.item/checked? id])
-           :on-change (>evt [::events.item/check id])}])
+  [sui/TableCell {:text-align "center"
+                  :selectable true
+                  :on-click (>evt [::events.item/check id])}
+   [:input {:type "checkbox"
+            :checked (<sub [::subs.item/checked? id])}]])
 (defn item-name-display [id]
   [sui/TableCell {:on-click (>evt [::events.item/edit-name-start id])
                   :selectable true
@@ -32,12 +37,12 @@
                on-enter (fn [event]
                           (if (= (.-key event) "Enter")
                             (.blur (.-target event))))]
-              [sui/Input {:fluid true}
-               [:input {:id (str "edit-item-name-" id)
-                        :value (<sub [::subs.item/name.edited id])
-                        :on-change (r/partial on-name-change id)
-                        :on-key-down on-enter
-                        :on-blur (>evt [::events.item/edit-name-submit id])}]]))
+    [sui/Input {:fluid true}
+     [:input {:id (str "edit-item-name-" id)
+              :value (<sub [::subs.item/name.edited id])
+              :on-change (r/partial on-name-change id)
+              :on-key-down on-enter
+              :on-blur (>evt [::events.item/edit-name-submit id])}]]))
 
 (defn item-name-errors []
   [u/display-errors ::errors/item-form :name])
@@ -55,24 +60,23 @@
                                     (re-frame/dispatch [::events.item/update-location id (.-value props)]))
                on-cell-clicked (fn [id]
                                  (some-> js/document (.getElementById (str "edit-item-location-" id)) .click))]
-              [sui/TableCell {:style {:overflow "visible"
-                                      :cursor "pointer"}
-                              :on-click (r/partial on-cell-clicked id)
-                              :selectable true}
-               [sui/Select {:value (<sub [::subs.item/location id])
-                            :id (str "edit-item-location-" id)
-                            :on-change (r/partial on-location-change id)
-                            :options (<sub [::subs.locations/options])
-                            :style {:border "none"
-                                    :appearance "none"
-                                    :background "none"}
-                            :icon nil}]]))
+    [sui/TableCell {:style {:overflow "visible"
+                            :cursor "pointer"}
+                    :on-click (r/partial on-cell-clicked id)
+                    :selectable true}
+     [sui/Select {:value (<sub [::subs.item/location id])
+                  :id (str "edit-item-location-" id)
+                  :on-change (r/partial on-location-change id)
+                  :options (<sub [::subs.locations/options])
+                  :style {:border "none"
+                          :appearance "none"
+                          :background "none"}
+                  :icon nil}]]))
 
 (defn draw-item [id]
   [sui/TableRow
-   [sui/TableCell {:text-align "center"}
-    [item-delete-button id]]
+   [item-delete-button id]
    [item-name id]
    [item-location id]
-   [sui/TableCell {:text-align "center"}
-    [item-checkbox id]]])
+   [item-checkbox id]
+   ])
