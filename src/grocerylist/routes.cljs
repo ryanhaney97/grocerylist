@@ -8,11 +8,11 @@
 (defmethod panels :default [] [:div "No panel found for this route."])
 
 (def routes
-  ["/" {"" :lists
-        "new" :new-list
-        [:id ""] :list
-        [:id "/add"] :add-item
-        [:id "/locations"] :locations}])
+  ["/grocerylist/" {"" :lists
+                    "new" :new-list
+                    [:id ""] :list
+                    [:id "/add"] :add-item
+                    [:id "/locations"] :locations}])
 
 (defn parse
   [url]
