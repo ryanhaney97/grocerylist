@@ -23,4 +23,7 @@
   (re-frame/dispatch-sync [::events/initialize-db])
   (routing/start!)
   (dev-setup)
-  (mount-root))
+  (mount-root)
+  (if (not (routing/parse (pushy/get-token routing/history)))
+    (re-frame/dispatch [:grocerylist.events.route/to :lists]))
+  )
