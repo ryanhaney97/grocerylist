@@ -32,7 +32,7 @@
 
 (defn url-for
   [& args]
-  (str "/#" (apply bidi/path-for (into [routes] args))))
+  (str url-prefix (apply bidi/path-for (into [routes] args))))
 
 (defn dispatch
   [route]
