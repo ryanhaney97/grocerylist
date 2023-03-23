@@ -22,9 +22,8 @@
   [sui/TableCell {:text-align "center"
                   :selectable true
                   :on-click (>evt [::events.item/check id])}
-   [:input {:type "checkbox"
-            :on-change identity
-            :checked (<sub [::subs.item/checked? id])}]])
+   [sui/Checkbox {:on-change identity
+                  :checked (<sub [::subs.item/checked? id])}]])
 (defn item-name-display [id]
   [sui/TableCell {:on-click (>evt [::events.item/edit-name-start id])
                   :selectable true

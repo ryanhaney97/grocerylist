@@ -44,13 +44,23 @@
      [list-name-edit]]
     [list-name-display]))
 
+(def nav-button-border "1px solid rgba(34, 36, 38, 0.45)")
+
 (defn nav-buttons []
   [sui/ButtonGroup {:widths 3
-                    :basic true
-                    :style {:width "40%"}}
-   [u/nav-button :add-item "Add"]
-   [u/nav-button :lists "Lists"]
-   [u/nav-button :locations "Locations"]])
+                    :style {:width "40%"
+                            :border-left nav-button-border
+                            :border-right nav-button-border
+                            :border-bottom nav-button-border}}
+   [u/nav-button :add-item "Add" {:style {:font-weight "bold"
+                                          :background "#F0F0F0"
+                                          }}]
+   [u/nav-button :lists "Lists" {:style {:font-weight "bold"
+                                         :border-left nav-button-border
+                                         :border-right nav-button-border
+                                         :background "#F0F0F0"}}]
+   [u/nav-button :locations "Locations" {:style {:font-weight "bold"
+                                                 :background "#F0F0F0"}}]])
 
 (defn column-header [category category-element & [props]]
   [sui/TableHeaderCell (merge {:scope "col"
