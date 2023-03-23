@@ -75,7 +75,9 @@
                   :icon nil}]]))
 
 (defn draw-item [id]
-  [sui/TableRow
+  [sui/TableRow (if (<sub [::subs.item/checked? id])
+                  {:style {:background "#D8D8D8"}}
+                  {})
    [item-delete-button id]
    [item-name id]
    [item-location id]
